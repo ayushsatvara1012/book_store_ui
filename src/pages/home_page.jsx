@@ -1,10 +1,10 @@
 export default function Home_page() {
     return (<>
         {/*------- Container ------- */}
-        <div className='mx-auto p-4 w-full max-w-2xl text-sky-500 border border-gray-300 rounded-2xl flex flex-col'>
+        <div className='mt-11 p-4 w-full max-w-2xl text-sky-500 border border-gray-300 rounded-2xl flex flex-col sm:self-start'>
 
             {/*------- Title -------*/}
-            <h1 className="text-2xl font-bold text-gray-800">Title</h1>
+            <h1 className="text-2xl font-bold text-gray-800 ">Title</h1>
             <div>
                 <div className="mt-2">
                     <div
