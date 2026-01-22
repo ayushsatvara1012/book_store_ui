@@ -1,10 +1,12 @@
 function List_page({ allBooks }) {
+
+  
   return (
     <>
       <div className="w-full max-w-xl grid grid-cols-1 gap-4 rounded-2xl sm:self-start max-h-[calc(100vh-4rem)] overflow-y-auto shadow-inner no-scrollbar">
         {/* Heading */}
         <p className="sticky top-0 z-20 bg-white font-black text-gray-500 text-xl place-items-center grid">
-          📘 Your Books
+          📘 Your Total Books: {allBooks.length}
         </p>
 
         {allBooks.length === 0 ? (
