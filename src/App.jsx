@@ -3,6 +3,7 @@ import "./App.css";
 import HomePage from "./pages/home_page.jsx";
 import ListPage from "./pages/list_page.jsx";
 import Navbar from "./pages/navbar.jsx";
+import SearchBar from "./pages/search_bar";
 
 function App() {
   const [books, setBooks] = useState([]); // for fetching the books
@@ -58,30 +59,32 @@ function App() {
 
   return (
     <>
-      <Navbar />
-
-      {/* Notification UI */}
-      {notification && (
-        <div className="fixed top-20 right-5 z-50 animate-in fade-in slide-in-from-right-10 duration-300">
-          <div className="bg-green-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border-b-4 border-green-800">
-            <div className="bg-white text-green-600 rounded-full p-1">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-bold text-white">Success!</p>
-              <p className="text-sm opacity-90 text-white">{notification}</p>
+      <div className="flex flex-col mx-auto">
+        <Navbar />
+        <SearchBar/>
+        {/* Notification UI */}
+        {notification && (
+          <div className="fixed top-20 right-5 z-50 animate-in fade-in slide-in-from-right-10 duration-300">
+            <div className="bg-green-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border-b-4 border-green-800">
+              <div className="bg-white text-green-600 rounded-full p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-bold text-white">Success!</p>
+                <p className="text-sm opacity-90 text-white">{notification}</p>
+              </div>
             </div>
           </div>
+        )}
+        {/* Main content */}
+        <div className="m-2 max-h-[calc(100vh-5rem)] gap-4 flex flex-col items-center justify-center sm:flex-row">
+          <HomePage newbook={newbook}
+            setNewBook={setNewBook}
+            handleCreateBook={handleCreateBook} />
+          <ListPage allBooks={books} />
         </div>
-      )}
-      {/* Main content */}
-      <div className="m-4 max-h-[calc(100vh-5rem)] gap-2 flex flex-col items-center justify-center sm:flex-row">
-        <HomePage newbook={newbook}
-          setNewBook={setNewBook}
-          handleCreateBook={handleCreateBook} />
-        <ListPage allBooks={books} />
       </div>
     </>
   );

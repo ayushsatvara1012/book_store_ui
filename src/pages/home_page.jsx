@@ -1,10 +1,10 @@
 export default function Home_page({newbook,setNewBook,handleCreateBook}) {
     return (<>
         {/*------- Container ------- */}
-        <div className='mt-11 p-4 w-full max-w-2xl text-sky-500 border border-gray-300 rounded-2xl flex flex-col sm:self-start'>
+        <div className='mt-4 p-4 w-full max-w-2xl text-sky-500 border border-gray-300 rounded-2xl flex flex-col sm:mt-16 sm:w-1/3 sm:self-start'>
 
             {/*------- Title -------*/}
-            <h1 className="text-2xl font-bold text-gray-800 ">Title</h1>
+            <h2 className="text-2xl font-bold text-gray-800 ">Title</h2>
             <div>
                 <div className="mt-2">
                     <div
@@ -19,7 +19,7 @@ export default function Home_page({newbook,setNewBook,handleCreateBook}) {
             </div>
 
             {/*------- Author ------- */}
-            <h1 className="mt-2 text-2xl font-bold text-gray-800">Author</h1>
+            <h2 className="mt-2 text-2xl font-bold text-gray-800">Author</h2>
             <div>
                 <div className="mt-2">
                     <div
@@ -34,7 +34,7 @@ export default function Home_page({newbook,setNewBook,handleCreateBook}) {
             </div>
 
             {/*------- Year ------- */}
-            <h1 className="mt-2 text-2xl font-bold text-gray-800">Year</h1>
+            <h2 className="mt-2 text-2xl font-bold text-gray-800">Year</h2>
             <div>
                 <div className="mt-2">
                     <div
