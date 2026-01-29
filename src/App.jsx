@@ -59,12 +59,12 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col mx-auto">
+      <div className="flex flex-col min-h-screen bg-gray-50">
         <Navbar />
         <SearchBar/>
         {/* Notification UI */}
         {notification && (
-          <div className="fixed top-20 right-5 z-50 animate-in fade-in slide-in-from-right-10 duration-300">
+          <div className="fixed top-28 right-5 z-60 animate-in fade-in slide-in-from-right-10 duration-300">
             <div className="bg-green-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border-b-4 border-green-800">
               <div className="bg-white text-green-600 rounded-full p-1">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -79,7 +79,7 @@ function App() {
           </div>
         )}
         {/* Main content */}
-        <div className="m-2 max-h-[calc(100vh-5rem)] gap-4 flex flex-col items-center justify-center sm:flex-row">
+        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 gap-8 flex flex-col items-center justify-around sm:items-start sm:flex-row">
           <HomePage newbook={newbook}
             setNewBook={setNewBook}
             handleCreateBook={handleCreateBook} />
