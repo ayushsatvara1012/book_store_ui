@@ -1,4 +1,4 @@
-export default function Home_page({ newbook, setNewBook, handleCreateBook }) {
+export default function Home_page({ newbook, setNewBook, handleCreateBook, editID, handleCancelEdit }) {
     return (<>
         {/*------- Container ------- */}
         <form
@@ -11,7 +11,7 @@ export default function Home_page({ newbook, setNewBook, handleCreateBook }) {
             <div className="mb-4">
                 <label htmlFor="title" className="block text-sm font-bold text-gray-700 uppercase tracking-wider">Title</label>
                 <div className="mt-1">
-                    <div className="flex items-center rounded-xl bg-white px-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600 transition-all">
+                    <div className="flex items-center rounded-xl bg-white px-3 outline-1 outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600 transition-all">
                         <input
                             id='title'
                             name='title_input'
@@ -30,7 +30,7 @@ export default function Home_page({ newbook, setNewBook, handleCreateBook }) {
             <div className="mb-4">
                 <label htmlFor="author" className="block text-sm font-bold text-gray-700 uppercase tracking-wider">Author</label>
                 <div className="mt-1">
-                    <div className="flex items-center rounded-xl bg-white px-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600 transition-all">
+                    <div className="flex items-center rounded-xl bg-white px-3 outline-1 outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-blue-600 transition-all">
                         <input
                             id='author'
                             type="text"
@@ -61,13 +61,26 @@ export default function Home_page({ newbook, setNewBook, handleCreateBook }) {
                     </div>
                 </div>
             </div>
+            <div className="flex flex-row gap-2">
+                <button
+                    type="submit"
+                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 active:bg-blue-800 active:scale-[0.98] transition-all shadow-md hover:shadow-lg"
+                >
+                    {editID ? 'Update Book' : ' Add to Library'}
+                </button>
+                {editID && (
+                    <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="px-5 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
 
-            <button
-                type="submit"
-                className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 active:bg-blue-800 active:scale-[0.98] transition-all shadow-md hover:shadow-lg"
-            >
-                Add to Library
-            </button>
+                    </button>
+                )}
+            </div>
         </form>
     </>)
 }

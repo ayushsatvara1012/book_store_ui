@@ -9,6 +9,7 @@ function App() {
   const [books, setBooks] = useState([]); // for fetching the books
   const [newbook, setNewBook] = useState({ title: '', author: '', year: '' });
   const [notification, setNotification] = useState(null);
+  const [editID, setEditID] = useState(null)
 
   // Get the books from the backend
   const fetchBook = async () => {
@@ -49,10 +50,56 @@ function App() {
       }
     }
     catch (error) {
-      console.error('Error connectiong to the server', error)
+      console.error('Error connecting to the server', error)
     }
 
   }
+
+  // Edit book by id / Handle book
+  const handleUpdateBook = async (e) => {
+    e.preventDefault()
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/books/${editID}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            "title": newbook.title,
+            "author": newbook.author,
+            "year": parseInt(newbook.year)
+          })
+        });
+        if (response.ok){
+          const updatedBook = await response.json();
+          setBooks((prevBooks)=>prevBooks.map((book)=>(book.id === editID ? updatedBook:book)));
+
+          setNewBook({title:'',author:'',year:''});
+          setEditID(null);
+          setNotification("Book Updated SUccessfully !🎉")
+          setTimeout(()=>{
+            setNotification(null);
+          },3000);
+        }
+        else{
+          alert('Failed to update book!! Try again')
+        }
+    }
+    catch (error) {
+      console.error('Error connecting to the server !!')
+    }
+  }
+
+  const handleEdit = (book)=>{
+    setEditID(book.id);
+    setNewBook({title:book.title,author:book.author,year:book.year})
+  }
+  const handleCancelEdit = ()=>{
+    setEditID(null);
+    setNewBook({title:'',author:'',year:''})
+  }
+
   useEffect(() => {
     fetchBook();
   }, []);
@@ -61,7 +108,7 @@ function App() {
     <>
       <div className="flex flex-col min-h-screen bg-gray-50">
         <Navbar />
-        <SearchBar/>
+        <SearchBar />
         {/* Notification UI */}
         {notification && (
           <div className="fixed top-28 right-5 z-60 animate-in fade-in slide-in-from-right-10 duration-300">
@@ -82,8 +129,11 @@ function App() {
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 gap-8 flex flex-col items-center justify-around sm:items-start sm:flex-row">
           <HomePage newbook={newbook}
             setNewBook={setNewBook}
-            handleCreateBook={handleCreateBook} />
-          <ListPage allBooks={books} />
+            handleCreateBook={editID?handleUpdateBook:handleCreateBook} 
+            editID = {editID}
+            handleCancelEdit = {handleCancelEdit}
+            />
+          <ListPage allBooks={books} handleEdit={handleEdit}/>
         </div>
       </div>
     </>
