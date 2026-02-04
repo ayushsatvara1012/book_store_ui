@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import HomePage from "./pages/home_page.jsx";
 import ListPage from "./pages/list_page.jsx";
-import Navbar from "./pages/navbar.jsx";
-import SearchBar from "./pages/search_bar";
+import Navbar from "./pages/components/navbar.jsx";
 
 function App() {
   const [books, setBooks] = useState([]); // for fetching the books
@@ -108,7 +107,6 @@ function App() {
     <>
       <div className="flex flex-col min-h-screen bg-gray-50">
         <Navbar />
-        <SearchBar />
         {/* Notification UI */}
         {notification && (
           <div className="fixed top-28 right-5 z-60 animate-in fade-in slide-in-from-right-10 duration-300">
@@ -126,7 +124,7 @@ function App() {
           </div>
         )}
         {/* Main content */}
-        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 gap-8 flex flex-col items-center justify-around sm:items-start sm:flex-row">
+        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 md:gap-4 gap-6 flex flex-col items-center justify-center sm:items-start sm:flex-row">
           <HomePage newbook={newbook}
             setNewBook={setNewBook}
             handleCreateBook={editID?handleUpdateBook:handleCreateBook} 

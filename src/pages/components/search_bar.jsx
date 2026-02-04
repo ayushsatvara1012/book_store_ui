@@ -1,6 +1,6 @@
 function search_bar() {
     return (
-        <div className="sticky top-20 z-30 bg-white rounded-2xl w-full py-3 px-4 flex items-center max-w-2xl mx-auto shadow-sm">
+        <div className="sticky top-20 z-30 rounded-2xl w-full py-3 flex items-center max-w-2xl mx-auto">
             <div className="relative grow">
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
