@@ -1,6 +1,6 @@
-function search_bar() {
+function SearchBar({ searchTerm, setSearchTerm }) {
     return (
-        <div className="sticky top-20 z-30 rounded-2xl w-full py-3 flex items-center max-w-2xl mx-auto">
+        <div className="relative z-30 w-full py-3 flex items-center max-w-2xl mx-auto lg:mx-0">
             <div className="relative grow">
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -10,16 +10,15 @@ function search_bar() {
                 <input
                     id="search-bar"
                     type="text"
-                    placeholder="Search book..."
-                    className="w-full py-2 pl-4 pr-10 text-gray-700 bg-white border border-gray-200 rounded-l-2xl focus:outline-none focus:border-blue-500 transition-colors"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search book by title or author..."
+                    className="w-full py-2.5 pl-4 pr-10 text-gray-700 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all shadow-sm"
                 />
             </div>
-            <button className="px-6 py-2 bg-blue-600 text-white font-medium border border-blue-600 rounded-r-2xl hover:bg-blue-700 active:bg-blue-800 transition-colors">
-                Search
-            </button>
         </div>
 
     )
 }
 
-export default search_bar
+export default SearchBar
