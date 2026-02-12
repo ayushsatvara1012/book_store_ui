@@ -1,66 +1,142 @@
-function List_page({ allBooks,handleEdit }) {
+import { useState } from "react";
+import { ChevronLeft, ChevronRight, Edit3, Trash2, BookOpen } from "lucide-react";
+
+function List_page({ allBooks, handleEdit, handleDelete, currentPage, totalPages, onPageChange, isLoading, totalBooksCount }) {
+
+  const formatNumber = (num) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'm';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  }
+  return num;
+};
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col w-full h-full max-w-6xl mx-auto px-4 sm:px-6 animate-pulse">
+        <div className="h-20 bg-gray-200 rounded-2xl mb-6 w-full"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 bg-gray-200 rounded-2xl w-full"></div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <>
-      <div className="flex-1 w-full sm:max-w-2xl mt-4 flex flex-col gap-4 rounded-2xl sm:self-start max-h-[calc(100vh-14rem)] overflow-y-auto no-scrollbar px-4 sm:px-0">
+    // MAIN WRAPPER: Responsive height
+    <div className="flex flex-col w-full max-w-6xl mx-auto px-4 sm:px-6 transition-all duration-500 h-full lg:overflow-hidden">
 
-          {/* Heading */}
-          <p className="sticky top-0 z-20 bg-gray-50 py-4 font-black text-gray-700 text-2xl flex items-center gap-3">
-            <span className="text-blue-600">📘</span> 
-            Your Library <span className="text-sm font-bold bg-gray-200 text-gray-600 px-3 py-1 rounded-full">{allBooks.length}</span>
-          </p>
-
-        {allBooks.length === 0 ? (
-          /* Show this when EMPTY */
-          <div className=" flex flex-col items-center justify-center p-10 border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50">
-            <span className="text-6xl mb-4">📭</span>
-            <h3 className="text-xl font-bold text-gray-500">No Books Found</h3>
-            <p className="text-gray-400">
-              Your library is currently empty. Add a book to get started!
+      {/* 1. STICKY HEADER WRAPPER */}
+      {/* Added: sticky, top-0, z-index, and background color to hide scrolling content */}
+      <div className="sticky top-14 z-30 shrink-0 pt-6 pb-4 bg-gray-50/95 backdrop-blur-sm lg:top-0">
+        <div className="flex flex-row md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-3">
+              <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-200">
+                <BookOpen className="text-white" size={24} />
+              </div>
+              Library
+            </h1>
+            <p className="mt-2 text-slate-500 font-medium">
+              {formatNumber(totalBooksCount)} books in collection
             </p>
           </div>
-        ) : (
-          allBooks.map((book) => (
-            <div
-              className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-4"
-              key={book.id}
+
+          {/* MINIMALIST PAGINATION */}
+          <div className="flex items-center bg-red p-1 rounded-2xl border border-gray-200 shadow-sm self-start md:self-auto">
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="p-1.5 rounded-xl text-slate-500 hover:bg-gray-50 hover:text-blue-600 hover:shadow-sm transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
             >
-              <div className="flex flex-row items-center gap-4 flex-1 min-w-0">
-                <div className="shrink-0 w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center text-3xl">
-                  📚
+              <ChevronLeft size={20} />
+            </button>
+            <div className="px-2 text-sm font-bold text-slate-700">
+              {currentPage} <span className="text-slate-400 mx-1">/</span> {totalPages}
+            </div>
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl text-slate-500 hover:bg-gray-50 hover:text-blue-600 hover:shadow-sm transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. SCROLLABLE CONTENT AREA */}
+      <div className="flex-1 overflow-y-auto pr-1 pb-10 custom-scrollbar">
+        {allBooks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-75border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50 my-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-3xl">📭</div>
+            <h3 className="text-lg font-bold text-gray-800">The shelves are empty</h3>
+            <p className="text-gray-500 text-sm mt-1">Try changing your search or add a book.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+            {allBooks.map((book) => (
+              <div
+                key={book.id}
+                className="group relative bg-white p-4 rounded-3xl border border-gray-100 hover:border-blue-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 flex items-center gap-5"
+              >
+                {/* Book Card Content */}
+                <div className="relative shrink-0 w-20 h-28 bg-gray-100 rounded-xl overflow-hidden shadow-inner">
+                  <BookImage src={book.image_url} title={book.title} />
                 </div>
 
-                <div className="flex flex-col min-w-0">
-                  <h3 className="font-bold text-lg text-gray-900 truncate antialiased">
+                <div className="flex-1 min-w-0 py-1">
+                  <h3 className="text-lg font-bold text-slate-800 truncate leading-tight mb-1" title={book.title}>
                     {book.title}
                   </h3>
-                  <p className="text-gray-500 italic text-sm truncate antialiased">
+                  <p className="text-slate-500 text-sm truncate font-medium mb-3">
                     {book.author}
                   </p>
-                  <p className="mt-1 text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md w-fit antialiased">
+                  <span className="inline-block text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
                     {book.year}
-                  </p>
+                  </span>
+
+                  {/* Actions (Floating) */}
+                  <div className="absolute top-4 right-4 flex gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
+                    <button onClick={() => handleEdit(book)} className="p-2 bg-white shadow-md border border-gray-100 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all transform hover:scale-110 active:scale-95">
+                      <Edit3 size={16} />
+                    </button>
+                    <button onClick={() => handleDelete(book.id)} className="p-2 bg-white shadow-md border border-gray-100 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all transform hover:scale-110 active:scale-95">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2">
-                <button onClick={()=>handleEdit(book)} className="flex items-center justify-center text-green-700 w-10 h-10 bg-green-50 border border-green-200 rounded-xl hover:bg-green-600 hover:text-white transition-colors active:scale-95">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                  </svg>
-                </button>
-                <button className="flex items-center justify-center text-red-700 w-10 h-10 bg-red-50 border border-red-200 rounded-xl hover:bg-red-600 hover:text-white transition-colors active:scale-95">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
+function BookImage({ src, title }) {
+  const [isError, setIsError] = useState(false);
 
+  if (!src || isError) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300 italic text-xs text-center p-2 font-medium">
+        No Cover
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={title}
+      loading="lazy"
+      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+      onError={() => setIsError(true)}
+    />
+  );
+}
 export default List_page;
