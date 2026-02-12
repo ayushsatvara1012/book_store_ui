@@ -7,10 +7,12 @@ import Notification from "./pages/components/notification.jsx";
 
 function App() {
   const [books, setBooks] = useState([]); // for fetching the books
-  const [newbook, setNewBook] = useState({ title: '', author: '', year: '', image_url: '' });
+  const [newbook, setNewBook] = useState({ title: '', author: '', year: '', image_url: '', isbn: '' });
   const [notification, setNotification] = useState(null);
   const [notificationType, setNotificationType] = useState('success');
   const [editID, setEditID] = useState(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalBooksCount, setTotalBooksCount] = useState(0);
 
   // New States
   const [isLoading, setIsLoading] = useState(true);
@@ -19,21 +21,26 @@ function App() {
   const itemsPerPage = 20;
 
   // Get the books from the backend
-  const fetchBook = async () => {
-    setIsLoading(true);
-    try {
-      // Simulating a small delay to show loading state if API is too fast
-      // await new Promise(resolve => setTimeout(resolve, 800)); 
-      const response = await fetch("http://127.0.0.1:8000/books");
-      const data = await response.json();
-      setBooks(data);
-    } catch (error) {
-      console.error("Error fetching books:", error);
-      showNotification("Failed to fetch books. Is the backend running?", "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const fetchBook = async (page = 1) => {
+  setIsLoading(true);
+  try {
+    // Backticks are essential here for the ${} variables to work
+    const response = await fetch(
+      `http://127.0.0.1:8000/books?page=${page}&limit=${itemsPerPage}`
+    );
+    const data = await response.json();
+    
+    // Server returns { "total": 271360, "books": [...] }
+    setBooks(data.books || []);
+    setTotalBooksCount(data.total || 0)
+    setTotalPages(Math.ceil(data.total / itemsPerPage) || 1);
+  } catch (error) {
+    console.error("Fetch error:", error);
+    showNotification("Failed to fetch books from server.", "error");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const showNotification = (message, type = 'success') => {
     setNotification(message);
@@ -53,14 +60,15 @@ function App() {
           "title": newbook.title,
           "author": newbook.author,
           "year": parseInt(newbook.year),
-          "image_url": newbook.image_url
+          "image_url": newbook.image_url,
+          "isbn": newbook.isbn
         })
       });
       if (response.ok) {
         const createdBook = await response.json();
         setBooks((prevBooks) => [...prevBooks, createdBook]);
 
-        setNewBook({ title: '', author: '', year: '', image_url: '' });
+        setNewBook({ title: '', author: '', year: '', image_url: '', isbn: '' });
         showNotification("Book Added Successfully! 🎉");
       }
       else {
@@ -87,14 +95,15 @@ function App() {
             "title": newbook.title,
             "author": newbook.author,
             "year": parseInt(newbook.year),
-            "image_url": newbook.image_url
+            "image_url": newbook.image_url,
+            "isbn": newbook.isbn
           })
         });
       if (response.ok) {
         const updatedBook = await response.json();
         setBooks((prevBooks) => prevBooks.map((book) => (book.id === editID ? updatedBook : book)));
 
-        setNewBook({ title: '', author: '', year: '', image_url: '' });
+        setNewBook({ title: '', author: '', year: '', image_url: '', isbn: '' });
         setEditID(null);
         showNotification("Book Updated Successfully! 🎉");
       }
@@ -109,57 +118,55 @@ function App() {
   }
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this book?")) return;
+  if (!window.confirm("Are you sure you want to delete this book?")) return;
 
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/books/${id}`, {
-        method: 'DELETE'
-      });
-      if (response.ok) {
-        setBooks(books.filter(book => book.id !== id));
-        showNotification("Book Deleted Successfully", "success");
-
-        // Adjust current page if empty
-        const remainingBooks = books.length - 1;
-        const totalPages = Math.ceil(remainingBooks / itemsPerPage);
-        if (currentPage > totalPages && totalPages > 0) {
-          setCurrentPage(totalPages);
-        }
-      } else {
-        showNotification("Failed to delete book", "error");
-      }
-    } catch (error) {
-      console.error("Error deleting book:", error);
-      showNotification("Error deleting book", "error");
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/books/${id}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      showNotification("Book Deleted Successfully", "success");
+      // IMPORTANT: Re-fetch the current page from the server 
+      // This ensures the next book in the database "slides up" into the 20th slot
+      fetchBook(currentPage);
+    } else {
+      showNotification("Failed to delete book", "error");
     }
+  } catch (error) {
+    console.error("Error deleting book:", error);
   }
+};
 
   const handleEdit = (book) => {
     setEditID(book.id);
-    setNewBook({ title: book.title, author: book.author, year: book.year, image_url: book.image_url || '' });
+    setNewBook({ title: book.title, author: book.author, year: book.year, image_url: book.image_url || '', isbn: book.isbn });
     // Scroll to top on mobile to see the form
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   const handleCancelEdit = () => {
     setEditID(null);
-    setNewBook({ title: '', author: '', year: '', image_url: '' });
+    setNewBook({ title: '', author: '', year: '', image_url: '', isbn: '' });
   }
 
+useEffect(() => {
+  // Reset to page 1 whenever the user types a new search
+  setCurrentPage(1);
+}, [searchTerm]);
+
+
   useEffect(() => {
-    fetchBook();
-  }, []);
+  fetchBook(currentPage);
+}, [currentPage]);
 
   // Filter and Pagination Logic
-  const filteredBooks = books.filter(book =>
-    book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.author.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
-  const totalPages = Math.max(1, Math.ceil(filteredBooks.length / itemsPerPage));
-  const indexOfLastBook = currentPage * itemsPerPage;
-  const indexOfFirstBook = indexOfLastBook - itemsPerPage;
-  const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
+  // const totalPages = Math.max(1, Math.ceil(filteredBooks.length / itemsPerPage));
+  // const indexOfLastBook = currentPage * itemsPerPage;
+  // const indexOfFirstBook = indexOfLastBook - itemsPerPage;
+  // const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
+  const currentBooks = books;
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -198,7 +205,7 @@ function App() {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
-            totalBooksCount={filteredBooks.length}
+            totalBooksCount={totalBooksCount}
           />
         </div>
       </div>

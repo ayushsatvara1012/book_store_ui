@@ -3,6 +3,16 @@ import { ChevronLeft, ChevronRight, Edit3, Trash2, BookOpen } from "lucide-react
 
 function List_page({ allBooks, handleEdit, handleDelete, currentPage, totalPages, onPageChange, isLoading, totalBooksCount }) {
 
+  const formatNumber = (num) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'm';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  }
+  return num;
+};
+
   if (isLoading) {
     return (
       <div className="flex flex-col w-full h-full max-w-6xl mx-auto px-4 sm:px-6 animate-pulse">
@@ -18,11 +28,12 @@ function List_page({ allBooks, handleEdit, handleDelete, currentPage, totalPages
 
   return (
     // MAIN WRAPPER: Responsive height
-    <div className="flex flex-col w-full max-w-6xl mx-auto px-4 sm:px-6 transition-all duration-500 h-full overflow-hidden">
+    <div className="flex flex-col w-full max-w-6xl mx-auto px-4 sm:px-6 transition-all duration-500 h-full lg:overflow-hidden">
 
-      {/* 1. HEADER */}
-      <div className="shrink-0 pt-0 pb-4 bg-gray-50">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+      {/* 1. STICKY HEADER WRAPPER */}
+      {/* Added: sticky, top-0, z-index, and background color to hide scrolling content */}
+      <div className="sticky top-14 z-30 shrink-0 pt-6 pb-4 bg-gray-50/95 backdrop-blur-sm lg:top-0">
+        <div className="flex flex-row md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-6">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-3">
               <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-200">
@@ -31,20 +42,20 @@ function List_page({ allBooks, handleEdit, handleDelete, currentPage, totalPages
               Library
             </h1>
             <p className="mt-2 text-slate-500 font-medium">
-              {totalBooksCount} books in collection
+              {formatNumber(totalBooksCount)} books in collection
             </p>
           </div>
 
           {/* MINIMALIST PAGINATION */}
-          <div className="flex items-center bg-white p-1.5 rounded-2xl border border-gray-200 shadow-sm self-start md:self-auto">
+          <div className="flex items-center bg-red p-1 rounded-2xl border border-gray-200 shadow-sm self-start md:self-auto">
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-2 rounded-xl text-slate-500 hover:bg-gray-50 hover:text-blue-600 hover:shadow-sm transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+              className="p-1.5 rounded-xl text-slate-500 hover:bg-gray-50 hover:text-blue-600 hover:shadow-sm transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
             >
               <ChevronLeft size={20} />
             </button>
-            <div className="px-4 text-sm font-bold text-slate-700">
+            <div className="px-2 text-sm font-bold text-slate-700">
               {currentPage} <span className="text-slate-400 mx-1">/</span> {totalPages}
             </div>
             <button
@@ -61,7 +72,7 @@ function List_page({ allBooks, handleEdit, handleDelete, currentPage, totalPages
       {/* 2. SCROLLABLE CONTENT AREA */}
       <div className="flex-1 overflow-y-auto pr-1 pb-10 custom-scrollbar">
         {allBooks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50 my-4">
+          <div className="flex flex-col items-center justify-center min-h-75border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50 my-4">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-3xl">📭</div>
             <h3 className="text-lg font-bold text-gray-800">The shelves are empty</h3>
             <p className="text-gray-500 text-sm mt-1">Try changing your search or add a book.</p>
@@ -71,7 +82,7 @@ function List_page({ allBooks, handleEdit, handleDelete, currentPage, totalPages
             {allBooks.map((book) => (
               <div
                 key={book.id}
-                className="group relative bg-white p-4 rounded-[1.5rem] border border-gray-100 hover:border-blue-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 flex items-center gap-5"
+                className="group relative bg-white p-4 rounded-3xl border border-gray-100 hover:border-blue-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 flex items-center gap-5"
               >
                 {/* Book Card Content */}
                 <div className="relative shrink-0 w-20 h-28 bg-gray-100 rounded-xl overflow-hidden shadow-inner">
