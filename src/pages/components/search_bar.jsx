@@ -6,12 +6,12 @@ function SearchBar({ searchTerm, setSearchTerm, isAiMode, setIsAiMode }) {
             <div className="relative flex items-center grow">
                 {/* AI Toggle Button - Absolute positioned inside or next to the bar */}
                 <button
+                    type="button"
                     onClick={() => setIsAiMode(!isAiMode)}
-                    className={`absolute left-2 z-40 p-1.5 rounded-xl transition-all duration-300 flex items-center gap-2 ${
-                        isAiMode 
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' 
-                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                    }`}
+                    className={`absolute left-2 z-40 p-1.5 rounded-xl transition-all duration-300 flex items-center gap-2 ${isAiMode
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                        }`}
                     title={isAiMode ? "AI Semantic Search Active" : "Switch to AI Search"}
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,11 +26,10 @@ function SearchBar({ searchTerm, setSearchTerm, isAiMode, setIsAiMode }) {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder={isAiMode ? "Search by concept (e.g. 'dystopian future')..." : "Search book by title or author..."}
-                    className={`w-full py-2.5 pr-10 text-gray-700 bg-white border rounded-2xl focus:outline-none transition-all shadow-sm ${
-                        isAiMode 
-                        ? 'pl-24 border-blue-400 ring-2 ring-blue-100' 
-                        : 'pl-12 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
-                    }`}
+                    className={`w-full py-2.5 pr-10 text-gray-700 bg-white border rounded-2xl focus:outline-none transition-all shadow-sm ${isAiMode
+                            ? 'pl-28 border-blue-400 ring-2 ring-blue-100'
+                            : 'pl-12 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
+                        }`}
                 />
 
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -39,7 +38,7 @@ function SearchBar({ searchTerm, setSearchTerm, isAiMode, setIsAiMode }) {
                     </svg>
                 </div>
             </div>
-            
+
             {/* Subtle Hint Text */}
             {isAiMode && (
                 <p className="text-xs text-blue-500 font-medium ml-2 animate-pulse">
