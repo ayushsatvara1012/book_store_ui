@@ -1,12 +1,12 @@
 import SearchBar from './components/search_bar'
 import { X } from 'lucide-react';
-export default function Home_page({ newbook, setNewBook, handleCreateBook, editID, handleCancelEdit, searchTerm, setSearchTerm }) {
+export default function Home_page({ newbook, setNewBook, handleCreateBook, editID, handleCancelEdit, searchTerm, setSearchTerm, isAiMode, setIsAiMode }) {
     // Guard clause to prevent crashing if newbook is undefined
     if (!newbook) return null;
 
     return (
         <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:gap-6 shrink-0">
-            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} isAiMode={isAiMode} setIsAiMode={setIsAiMode} />
 
             <form
                 onSubmit={handleCreateBook}

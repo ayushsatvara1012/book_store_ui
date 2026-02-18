@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import HomePage from "./pages/home_page.jsx";
 import ListPage from "./pages/list_page.jsx";
@@ -15,32 +15,75 @@ function App() {
   const [totalBooksCount, setTotalBooksCount] = useState(0);
 
   // New States
-  const [isLoading, setIsLoading] = useState(true);
+ const [isAiMode, setIsAiMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
   // Get the books from the backend
-  const fetchBook = async (page = 1) => {
+  // 1. Update the useCallback to be more stable
+const fetchBook = useCallback(async (page = 1, searchQuery = '') => {
   setIsLoading(true);
   try {
-    // Backticks are essential here for the ${} variables to work
-    const response = await fetch(
-      `http://127.0.0.1:8000/books?page=${page}&limit=${itemsPerPage}`
-    );
+    let url = `http://127.0.0.1:8000/books?page=${page}&limit=${itemsPerPage}`;
+    if (searchQuery.trim()) {
+      url += `&search=${encodeURIComponent(searchQuery)}`;
+    }
+    const response = await fetch(url);
     const data = await response.json();
-    
-    // Server returns { "total": 271360, "books": [...] }
     setBooks(data.books || []);
-    setTotalBooksCount(data.total || 0)
+    setTotalBooksCount(data.total || 0);
     setTotalPages(Math.ceil(data.total / itemsPerPage) || 1);
   } catch (error) {
     console.error("Fetch error:", error);
-    showNotification("Failed to fetch books from server.", "error");
+    showNotification("Failed to fetch books.", "error");
   } finally {
     setIsLoading(false);
   }
-};
+}, [itemsPerPage]);
+
+// 2. Separate Semantic Search into its own stable function
+const handleSemanticSearch = useCallback(async (query) => {
+  if (!query.trim()) return;
+  
+  setIsLoading(true);
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8000/books/search/semantic/?query=${encodeURIComponent(query)}&limit=20`
+    );
+    const data = await response.json();
+    setBooks(data || []);
+    setTotalPages(1); // AI results are usually a single relevant set
+    setTotalBooksCount(data?.length || 0);
+  } catch (error) {
+    console.error("AI Search error:", error);
+    showNotification("AI Search failed.", "error");
+  } finally {
+    setIsLoading(false);
+  }
+}, []);
+
+// 3. Single Source of Truth for Data Fetching
+useEffect(() => {
+  if (isAiMode) {
+    if (searchTerm.trim().length > 2) {
+      const delayDebounceFn = setTimeout(() => {
+        handleSemanticSearch(searchTerm);
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
+    } else {
+        // If AI mode is on but search is empty, maybe show empty or default?
+        setBooks([]); 
+    }
+  } else {
+    // Standard Mode: Fetch based on page
+    const delayDebounceFn = setTimeout(() => {
+      fetchBook(currentPage, searchTerm);
+    }, 300);
+    return () => clearTimeout(delayDebounceFn);
+  }
+}, [searchTerm, isAiMode, currentPage, fetchBook, handleSemanticSearch]);
 
   const showNotification = (message, type = 'success') => {
     setNotification(message);
@@ -129,7 +172,7 @@ function App() {
       showNotification("Book Deleted Successfully", "success");
       // IMPORTANT: Re-fetch the current page from the server 
       // This ensures the next book in the database "slides up" into the 20th slot
-      fetchBook(currentPage);
+      fetchBook(currentPage, searchTerm);
     } else {
       showNotification("Failed to delete book", "error");
     }
@@ -156,9 +199,7 @@ useEffect(() => {
 }, [searchTerm]);
 
 
-  useEffect(() => {
-  fetchBook(currentPage);
-}, [currentPage]);
+
 
   // Filter and Pagination Logic
 
@@ -195,6 +236,8 @@ useEffect(() => {
             handleCancelEdit={handleCancelEdit}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            isAiMode={isAiMode}
+            setIsAiMode={setIsAiMode}
           />
 
           <ListPage
@@ -206,6 +249,7 @@ useEffect(() => {
             onPageChange={handlePageChange}
             isLoading={isLoading}
             totalBooksCount={totalBooksCount}
+            isAiMode={isAiMode}
           />
         </div>
       </div>

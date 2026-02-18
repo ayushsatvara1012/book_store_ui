@@ -10,7 +10,7 @@ export default function Navbar() {
         </div>
 
         {/* // LOG IN BUTTON */}
-        <button className="px-5 py-2 rounded-full font-medium text-sm bg-slate-900 text-white hover:bg-slate-800 hover:shadow-lg active:scale-95 transition-all duration-200">
+        <button type="button" className="px-5 py-2 rounded-full font-medium text-sm bg-slate-900 text-white hover:bg-slate-800 hover:shadow-lg active:scale-95 transition-all duration-200">
           Sign In
         </button>
 
